@@ -1,0 +1,77 @@
+{% load static %}
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+		<title>商品詳細</title>
+		<link rel='stylesheet' type='text/css' href='{% static "shopping/style.css" %}' />
+	</head>
+	<body>
+		<h3>商品の詳細表示</h3>
+		<br />
+		<table>
+			<tr>
+				<th>商品名</th>
+				<td>{{ product.name }}</td>
+			</tr>
+			<tr>
+				<th>商品の色</th>
+				<td><label>色:
+                    <select>{% for sub_product in sub_products %}<option{% if sub_product == sub_product_to_show %} selected{% endif %}>{{ sub_product.name }}</option>{% endfor %}</select>
+                </label></td>
+			</tr>
+			<tr>
+				<th>メーカー名</th>
+				<td>{{ product.manufacturer.name }}</td>
+			</tr>
+			<tr>
+				<th>価格</th>
+				<td>{{ sub_product_to_show.price }}円</td>
+			</tr>
+			<tr>
+				<th>在庫数</th>
+				<td>{{ allocatable_stocks_sum }} 個</td>
+			</tr>
+		</table>
+        {% if allocatable_stocks_sum > 0 %}
+		<form action='cart.html' method='POST'>
+        {% csrf_token %}
+        <label for="amount">
+			数量
+        </label>
+			<select name='amount' id="amount">
+                {% if allocatable_stocks_sum > 19 %}
+                    {# for range tweak #}
+                    {% with ''|center:20 as range %}
+                        {% for i in range %}
+                            {% if forloop.counter == 1 %}
+                                <option selected value='{{ forloop.counter }}'>{{ forloop.counter }}</option>
+                            {% else %}
+                                <option value='{{ forloop.counter }}'>{{ forloop.counter }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% else %}
+                    {% with ''|center:allocatable_stocks_sum as range %}
+                    {# for range tweak #}
+                        {% for i in range %}
+                            {% if forloop.counter == 1 %}
+                                <option selected value='{{ forloop.counter }}'>{{ forloop.counter }}</option>
+                            {% else %}
+                                <option value='{{ forloop.counter }}'>{{ forloop.counter }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
+			</select><br />
+			<input type='hidden' name='sub_product_id' value='{{ sub_product_to_show.id }}' />
+			<input type='submit' value='ショッピングカートに入れる' /><br />
+			※ログインしていない状態では、ボタンのクリック後、<a href='../../registration/login.html'>ログイン画面</a>に転送される。<br />
+
+
+		</form>
+        {% else %}
+            <div>Out of stock</div>
+        {% endif %}
+		<a href='main.html'>商品検索</a>へ<br />
+	</body>
+</html>

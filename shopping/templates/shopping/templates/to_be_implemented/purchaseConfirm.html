@@ -1,0 +1,50 @@
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+		<title>商品の購入確認</title>
+		<link rel='stylesheet' type='text/css' href='style.css' />
+	</head>
+	<body>
+		<h3>以下の商品を購入しますか？</h3>
+		<br />
+		<table>
+			<tr>
+				<th>商品名</th>
+				<th>商品の色</th>
+				<th>メーカー名</th>
+				<th>単価</th>
+				<th>数量</th>
+			</tr>
+			<tr>
+				<td>麦わら帽子</td>
+				<td>黄色</td>
+				<td>日本帽子製造</td>
+				<td>4980円</td>
+				<td>2 個</td>
+			</tr>
+			<tr>
+				<td>子ども用麦わら帽子</td>
+				<td>赤</td>
+				<td>東京帽子店</td>
+				<td>2980円</td>
+				<td>3 個	</td>
+			</tr>
+		</table>
+		合計 18900 円<br /><br />
+		<form action='purchaseCommit.html' method='POST'>
+			清算方法<br />
+			<select name='payment'>
+				<option selected>代金引換</option>
+			</select><br /><br />
+			配送先<br />
+			<input type='radio' name='destination' value='registered' checked />ご自宅<br /><br />
+			<input type='radio' name='destination' value='another' />配送先を指定<br />
+			ご住所<br />
+			<input type='text' name='address' /><br /><br />
+			購入しますか？<br />
+			<input type='submit' value='購入する' />
+		</form>
+		<br /><br />
+		<a href='../main.html'>商品検索</a>へ<br />
+	</body>
+</html>

@@ -1,0 +1,62 @@
+{% extends "shopping/templates/_base.html" %}
+{% block title %}会員情報{% endblock %}
+{% block main_content %}
+	<body>
+		<h3>会員情報</h3>
+		<br />
+		<form action='updateUserConfirm.html' method='POST'>
+            {% csrf_token %}
+			<table>
+				<tr>
+					<th>会員ID</th>
+					<td>{{ view.request.user.email }}</td>
+				</tr>
+				<tr>
+					<th><label for="name">お名前</label> </th>
+					<td><input type='text' name='name' id="name" value='{{ view.request.user.get_full_name }}' class='text' /></td>
+				</tr>
+				<tr>
+                    <th><label for="password1">パスワード</label></th>
+					<td><input type='password' name='password1' id="password1" class='password' /></td>
+				</tr>
+				<tr>
+					<th><label for="password2"> パスワード(確認)</label></th>
+					<td><input type='password' name='password2' id="password2" class='password' /></td>
+				</tr>
+                <tr>
+                    <th>
+                        <label for="zipcode">郵便番号(7桁)</label>
+                    </th>
+                    <td>
+                        <input type="text" name="zipcode" id="zipcode" value="{{ view.request.user.address_set.all.first.zipcode.code }}">
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <label for="prefecture">都道府県名</label>
+                    </th>
+                    <td>
+                        <select id="prefecture">
+                            {% for prefecture in prefectures %}
+                                <option value="{{ prefecture.id }}"{% if prefecture.id == view.request.user.address_set.all.first.zipcode.prefectures.id %} selected{% endif %}>{{ prefecture.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="address_1">ご住所(1行目)</label></th>
+					<td><input type='text' name='address_1' id="address_1" value='{{ view.request.user.address_set.all.first.line_1 }}' class='text' /></td>
+				</tr>
+				<tr>
+                    <th><label for="address_2">ご住所(2行目)</label></th>
+					<td><input type='text' name='address_2' id="address_2" value='{{ view.request.user.address_set.all.first.line_2 }}' class='text' /></td>
+				</tr>
+				<tr>
+					<td colspan='2'><input type='submit' value='変更' /></td>
+				</tr>
+			</table>
+		</form>
+		<a href='../shopping/templates/to_be_implemented/withdrawConfirm.html'>退会する</a><br /><br />
+		<a href='../shopping/templates/to_be_implemented/purchaseHistory.html'>購入履歴</a>へ<br />
+		<a href='../shopping/templates/main.html'>商品検索</a>へ<br />
+{% endblock %}

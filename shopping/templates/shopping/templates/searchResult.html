@@ -1,0 +1,51 @@
+{% load static %}
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+		<title>検索結果</title>
+		<link rel='stylesheet' type='text/css' href='{% static "shopping/style.css" %}' />
+	</head>
+	<body>
+		<h3>キーワード "{% for keyword in keyword_list %}{{ keyword }}{% if not forloop.last %} {% endif %}{% endfor %}" の検索結果</h3>
+		<br />
+		<table>
+			<tr>
+				<th>商品名</th>
+				<th>商品の色</th>
+				<th>メーカー名</th>
+				<th>価格</th>
+			</tr>
+
+            {% for product in result_products %}
+                <tr>
+				<td><a href='{% url "product_detail" product.id product.subproduct_set.first.id %}'>{{ product.name }}</a></td> {# todo: 商品詳細ページの実装 #}
+				<td>{{ product.subproduct_set.all }}</td>
+				<td>{{ product.manufacturer.name }}</td>
+				<td>{{ product.subproduct_set.first.price }}円</td>
+			</tr>
+            {% endfor %}
+
+{#			<tr>#}
+{#				<td><a href='itemDetail.html?itemId=234'>ストローハット</a><sup>オススメ!</sup></td>#}
+{#				<td>茶色</td>#}
+{#				<td>(株)ストローハットジャパン</td>#}
+{#				<td>3480円</td>#}
+{#			</tr>#}
+{#			<tr>#}
+{#				<td><a href='itemDetail.html?itemId=345'>子ども用麦わら帽子</a></td>#}
+{#				<td>赤</td>#}
+{#				<td>東京帽子店</td>#}
+{#				<td>2980円</td>#}
+{#			</tr>#}
+		</table>
+		<br />
+		前へ 
+		1 
+		<a href='searchResult.html?keyword=something&category=all&page=2'>2</a> 
+		<a href='searchResult.html?keyword=something&category=all&page=3'>3</a> 
+		<a href='searchResult.html?keyword=something&category=all&page=4'>4</a> 
+		<a href='searchResult.html?keyword=something&category=all&page=2'>次へ</a> 
+		<br /><br />
+		<a href='main.html'>商品検索</a>へ<br />
+	</body>
+</html>

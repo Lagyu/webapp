@@ -1,0 +1,46 @@
+{% extends "shopping/templates/_base.html" %}
+{% block title %}{% endblock %}
+{% block main_content %}
+		<h3>ショッピングカート内の商品一覧</h3>
+		<br />
+        {% if view.request.user.cart.productcart_set.all|length > 0 %}
+		<table>
+			<tr>
+				<th>商品名</th>
+				<th>商品の色</th>
+				<th>メーカー名</th>
+				<th>単価</th>
+				<th>数量</th>
+				<th></th>
+			</tr>
+            {% for product_in_cart in view.request.user.cart.productcart_set.all %}
+                {% if product_in_cart == added %}
+                    <tr style="background: aquamarine">
+                        <td>{{ product_in_cart.sub_product.parent_product.name }}</td>
+                        <td>{{ product_in_cart.sub_product.name }}</td>
+                        <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
+                        <td>{{ product_in_cart.sub_product.price }}円</td>
+                        <td>{{ product_in_cart.quantity }} 個</td>
+                        <td><a href='to_be_implemented/removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>{{ product_in_cart.sub_product.parent_product.name }}</td>
+                        <td>{{ product_in_cart.sub_product.name }}</td>
+                        <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
+                        <td>{{ product_in_cart.sub_product.price }}円</td>
+                        <td>{{ product_in_cart.quantity }} 個</td>
+                        <td><a href='to_be_implemented/removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
+                    </tr>
+                {% endif %}
+    {% endfor %}
+		</table>
+    {% load cart_sum %}
+		合計 {{ view.request.user.cart|cart_sum }} 円<br />
+    {% endif %}
+		<form action='to_be_implemented/purchaseConfirm.html' method='POST'>
+			<input type='submit' value='購入する' />
+		</form>
+		<br />
+		<a href="{% url 'index' %}">商品検索</a>へ<br />
+{% endblock %}

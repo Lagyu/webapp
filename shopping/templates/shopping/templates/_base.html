@@ -1,0 +1,13 @@
+{% load static %}
+<html lang="ja">
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
+		<title>{% block title %}{% endblock %}</title>
+		<link rel='stylesheet' type='text/css' href='{% static "shopping/style.css" %}' />
+	</head>
+	<body>
+    {% block main_content %}
+        コンテンツのプレースホルダ
+    {% endblock %}
+	</body>
+</html>

@@ -1,0 +1,55 @@
+table {
+	border: 1px #7f7f7f solid;
+	border-collapse: collapse;
+}
+
+th {
+	background-color: #ffcfcf;
+	text-align: center;
+	border: 1px #7f7f7f solid;
+}
+
+td {
+	background-color: #ffffff;
+	text-align: center;
+	border: 1px #7f7f7f solid;
+}
+
+.noborder {
+	border: 0 #000000 hidden;
+}
+
+sup {
+	color: red;
+}
+
+input.text {
+	width: 300px;
+	ime-mode: auto;
+}
+
+input.id {
+	float: left;
+	width: 200px;
+	ime-mode: disabled;
+}
+
+input.password {
+	float: left;
+	width: 200px;
+	ime-mode: disabled;
+}
+
+p.warning {
+	background-repeat: repeat-x;
+	background-image: linear-gradient(to bottom, #fcf8e3 0%, #f8efc0 100%);
+	text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 1px 2px rgba(0, 0, 0, .05);
+	color: #8a6d3b;
+	background-color: #fcf8e3;
+	padding: 15px;
+    margin-bottom: 20px;
+	border: 1px solid transparent;
+	border-radius: 4px;
+
+}
