@@ -21,7 +21,7 @@
                         <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
                         <td>{{ product_in_cart.sub_product.price }}円</td>
                         <td>{{ product_in_cart.quantity }} 個</td>
-                        <td><a href='to_be_implemented/removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
+                        <td><a href='removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
                     </tr>
                 {% else %}
                     <tr>
@@ -30,7 +30,7 @@
                         <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
                         <td>{{ product_in_cart.sub_product.price }}円</td>
                         <td>{{ product_in_cart.quantity }} 個</td>
-                        <td><a href='to_be_implemented/removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
+                        <td><a href='removeFromCartConfirm.html?itemId={{ product_in_cart }}'>削除</a></td>
                     </tr>
                 {% endif %}
     {% endfor %}
@@ -42,5 +42,5 @@
 			<input type='submit' value='購入する' />
 		</form>
 		<br />
-		<a href="{% url 'index' %}">商品検索</a>へ<br />
+		<a href="{% url 'shopping:index' %}">商品検索</a>へ<br />
 {% endblock %}

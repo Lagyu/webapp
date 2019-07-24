@@ -18,7 +18,7 @@
 
             {% for product in result_products %}
                 <tr>
-				<td><a href='{% url "product_detail" product.id product.subproduct_set.first.id %}'>{{ product.name }}</a></td> {# todo: 商品詳細ページの実装 #}
+				<td><a href='{% url "shopping:product_detail" product.id product.subproduct_set.first.id %}'>{{ product.name }}</a></td>
 				<td>{{ product.subproduct_set.all }}</td>
 				<td>{{ product.manufacturer.name }}</td>
 				<td>{{ product.subproduct_set.first.price }}円</td>
@@ -46,6 +46,6 @@
 		<a href='searchResult.html?keyword=something&category=all&page=4'>4</a> 
 		<a href='searchResult.html?keyword=something&category=all&page=2'>次へ</a> 
 		<br /><br />
-		<a href='main.html'>商品検索</a>へ<br />
+		<a href='{% url "shopping:index" %}'>商品検索</a>へ<br />
 	</body>
 </html>

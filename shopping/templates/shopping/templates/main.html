@@ -1,14 +1,9 @@
-{% load static %}
-<html lang="ja">
-	<head>
-		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />
-		<title>商品検索</title>
-		<link rel='stylesheet' type='text/css' href='{% static "shopping/style.css" %}' />
-	</head>
-	<body>
+{% extends "shopping/templates/_base.html" %}
+{% block title %}商品検索{% endblock %}
+{% block main_content %}
 		<h3>商品の検索を行います。</h3>
 		<br />
-		<form action='{% url "search_result"  %}' method='POST'>
+		<form action='{% url "shopping:search_result"  %}' method='POST'>
         {% csrf_token %}
 			<br />
             <label>キーワード
@@ -26,13 +21,12 @@
             </label><br />
 			<input type='submit' value='検索' /><br />
 		</form>
-		<a href='{% url "cart" %}'>ショッピングカートを見る</a><br /><br />
+		<a href='{% url "shopping:cart" %}'>ショッピングカートを見る</a><br /><br />
         {% if not user_id %}
 		※ログインしていない場合には以下を表示<br />
 		    <a href='{% url "login" %}'>ログイン</a><br /><br />
         {% else %}
             ※ログイン済の場合には以下を表示<br />
-            <a href='../../accounts/updateUser.html'>会員情報の変更</a><br />
+            <a href='{% url "accounts:profile" %}'>会員情報の変更</a><br />
         {% endif %}
-	</body>
-</html>
+{% endblock %}

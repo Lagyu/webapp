@@ -7,9 +7,11 @@ from typing import List
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 
 from django.forms import ModelForm
+
+from django.core.exceptions import ObjectDoesNotExist
 
 import operator
 import functools
@@ -87,10 +89,11 @@ def product_detail(request, product_id: int, sub_product_id=0):
     return render(request, "shopping/templates/itemDetail.html", context)
 
 
-class CartView(generic.TemplateView, LoginRequiredMixin):
+class CartView(LoginRequiredMixin, generic.TemplateView):
     template_name = "shopping/templates/cart.html"
 
 
+@login_required()
 def add_to_cart(request, product_id, sub_product_id):
     if request.method == 'GET':
         return product_detail(request, product_id, sub_product_id)
@@ -100,26 +103,45 @@ def add_to_cart(request, product_id, sub_product_id):
         context = get_product_detail_context(request, product_id, sub_product_id)
 
         sub_product_id = int(request.POST.get("sub_product_id"))
-        sub_product = get_object_or_404(SubProduct, id=sub_product_id)
+        sub_product = SubProduct.objects.get(id=sub_product_id)
 
         parent_user = request.user  # Type: ShoppingUser
 
         quantity_to_add = int(request.POST.get("quantity"))
 
-        product_cart, created_bool = ProductCart.objects.get_or_create(
-            parent_cart=Cart.objects.get_or_create(parent_user=parent_user), sub_product=sub_product)
+        try:
+            user_cart = Cart.objects.get(parent_user=parent_user)
+        except ObjectDoesNotExist:
+            user_cart = Cart.objects.create(parent_user=parent_user)
 
-        if created_bool:
-            setattr(product_cart, "quantity", quantity_to_add)
-        else:
+        try:
+            product_cart = ProductCart.objects.get(parent_cart=user_cart, sub_product=sub_product)
             if product_cart.quantity + quantity_to_add <= sub_product.get_allocatable_stock_num():
-                setattr(product_cart, "quantity", product_cart.quantity + quantity_to_add)
+                product_cart.quantity = product_cart.quantity + quantity_to_add
+                product_cart.save()
             else:
                 context["warning"] = "在庫数以上をカートに入れようとしたので、カートに入れた数を在庫数に修正しました。"
 
+        except ObjectDoesNotExist:
+            product_cart = ProductCart.objects.create(parent_cart=user_cart, sub_product=sub_product, quantity=quantity_to_add)
+
+            setattr(product_cart, "quantity", quantity_to_add)
+
         context["added"] = product_cart
 
-        HttpResponseRedirect(reverse("shopping:cart", args=()))
+        return HttpResponseRedirect(reverse("shopping:added_to_cart",
+                                            kwargs={"added_product_cart_id": product_cart.id}))
+
+
+class RemoveFromCartConfirm(LoginRequiredMixin, generic.DeleteView):
+    template_name = "shopping/templates/removeFromCartConfirm.html"
+
+    model = ProductCart
+    success_url = reverse_lazy("shopping:cart")
+
+
+
+
 
 
 

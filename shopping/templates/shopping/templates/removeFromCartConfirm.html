@@ -1,0 +1,44 @@
+{% extends "shopping/templates/_base.html" %}
+{% block title %}ショッピングカート内の商品を削除{% endblock %}
+{% block main_content %}
+    <form method="post">{% csrf_token %}
+		<h3>"{{ object.sub_product }}"をショッピングカートから削除してよろしいですか？</h3>
+		<br />
+        <table>
+            <tr>
+                <th>
+                    商品名
+                </th>
+                <td>
+                    {{ object.sub_product.parent_product.name }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    種類
+                </th>
+                <td>
+                    {{ object.sub_product.parent_product.manufacturer.name }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    価格
+                </th>
+                <td>
+                    {{ object.sub_product.price }}円
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    数量
+                </th>
+                <td>
+                    {{ object.quantity }}個
+                </td>
+            </tr>
+        </table>
+    <input type="submit" value="確認">
+</form>
+		<a href='{% url "shopping:index" %}'>商品検索</a>へ<br />
+{% endblock %}

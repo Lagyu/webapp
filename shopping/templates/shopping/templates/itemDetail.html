@@ -14,9 +14,9 @@
 				<td>{{ product.name }}</td>
 			</tr>
 			<tr>
-				<th>商品の色</th>
-				<td><label>色:
-                    <select>{% for sub_product in sub_products %}<option{% if sub_product == sub_product_to_show %} selected{% endif %}>{{ sub_product.name }}</option>{% endfor %}</select>
+				<th>商品の種類</th>
+				<td><label>種類:
+                    <select onChange="location.href=value;">{% for sub_product in sub_products %}<option{% if sub_product == sub_product_to_show %} selected{% endif %} value="{% url 'shopping:product_detail' product.id sub_product.id %}">{{ sub_product.name }}</option>{% endfor %}</select>
                 </label></td>
 			</tr>
 			<tr>
@@ -33,12 +33,12 @@
 			</tr>
 		</table>
         {% if allocatable_stocks_sum > 0 %}
-		<form action='cart.html' method='POST'>
+		<form action='{% url "shopping:add_to_cart" product.id sub_product_to_show.id %}' method='POST'>
         {% csrf_token %}
         <label for="amount">
 			数量
         </label>
-			<select name='amount' id="amount">
+			<select name='quantity' id="quantity">
                 {% if allocatable_stocks_sum > 19 %}
                     {# for range tweak #}
                     {% with ''|center:20 as range %}
@@ -65,13 +65,13 @@
 			</select><br />
 			<input type='hidden' name='sub_product_id' value='{{ sub_product_to_show.id }}' />
 			<input type='submit' value='ショッピングカートに入れる' /><br />
-			※ログインしていない状態では、ボタンのクリック後、<a href='../../registration/login.html'>ログイン画面</a>に転送される。<br />
+			※ログインしていない状態では、ボタンのクリック後、<a href='{% url "login" %}'>ログイン画面</a>に転送される。<br />
 
 
 		</form>
         {% else %}
             <div>Out of stock</div>
         {% endif %}
-		<a href='main.html'>商品検索</a>へ<br />
+		<a href='{% url "shopping:index" %}'>商品検索</a>へ<br />
 	</body>
 </html>
