@@ -161,6 +161,10 @@ class Stock(models.Model):
     allocatable_num = models.IntegerField()
     allocated_num = models.IntegerField()
 
+    def __str__(self):
+        return self.product.name + " / 購入可: "+ str(self.allocatable_num) + "個" +\
+               " / 引当済: " + str(self.allocated_num) + "個"
+
 
 class Cart(models.Model):
     parent_user = models.OneToOneField(ShoppingUser, on_delete=models.CASCADE)

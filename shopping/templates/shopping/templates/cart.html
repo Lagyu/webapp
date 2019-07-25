@@ -22,7 +22,7 @@
                         <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
                         <td>{{ product_in_cart.sub_product.price }}円</td>
                         <td>{{ product_in_cart.quantity }} 個</td>
-                        <td><a href='removeFromCartConfirm.html?itemId={{ product_in_cart.id }}'>削除</a></td>
+                        <td><a href='{% url "shopping:remove_from_cart_confirm"  product_in_cart.id  %}'>削除</a></td>
                     </tr>
                 {% else %}
                     <tr>

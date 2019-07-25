@@ -17,16 +17,18 @@
 			</tr>
 
             {% for product in result_products %}
-                <tr>
-				<td><a href='{% url "shopping:product_detail" product.id product.subproduct_set.first.id %}'>{{ product.name }}</a></td>
-				<td>
-                    {% for sub_p in product.subproduct_set.all %}
-                        {% if forloop.counter > 1 %}, {% endif %}{{ sub_p.name }}
-				    {% endfor %}
-                </td>
-				<td>{{ product.manufacturer.name }}</td>
-				<td>{{ product.subproduct_set.first.price }}円</td>
-			</tr>
+                {% if 0 < product.subproduct_set.all|length %}
+                    <tr>
+                    <td><a href='{% url "shopping:product_detail" product.id product.subproduct_set.first.id %}'>{{ product.name }}</a></td>
+                    <td>
+                        {% for sub_p in product.subproduct_set.all %}
+                            {% if forloop.counter > 1 %}, {% endif %}{{ sub_p.name }}
+                        {% endfor %}
+                    </td>
+                    <td>{{ product.manufacturer.name }}</td>
+                    <td>{{ product.subproduct_set.first.price }}円</td>
+                </tr>
+                {% endif %}
             {% endfor %}
 
 {#			<tr>#}
