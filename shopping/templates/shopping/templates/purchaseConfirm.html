@@ -1,0 +1,47 @@
+{% extends "shopping/templates/_base.html" %}
+{% block title %}購入確認{% endblock %}
+{% block main_content %}
+		<h3>以下の商品を購入しますか？</h3>
+		<br />
+    {% if product_carts|length > 0 %}
+		<table>
+            <tr>
+				<th>商品名</th>
+				<th>商品の色</th>
+				<th>メーカー名</th>
+				<th>単価</th>
+				<th>数量</th>
+                <th>小計</th>
+			</tr>
+        {% for product_cart in product_carts %}
+            <tr>
+                <td>{{ product_cart.sub_product.parent_product.name }}</td>
+                <td>{{ product_cart.sub_product.name }}</td>
+                <td>{{ product_cart.sub_product.parent_product.manufacturer.name }}</td>
+                <td>{{ product_cart.sub_product.price }}円</td>
+                <td>{{ product_cart.quantity }}個</td>
+                <td>{{ product_cart.get_sum }}円</td>
+            </tr>
+        {% endfor %}
+		</table>
+        {% load cart_sum %}
+		合計 {{ product_carts|cart_sum }} 円<br /><br />
+		<form action='to_be_implemented/purchaseCommit.html' method='POST'>
+			清算方法<br />
+			<select name='payment'>
+				<option selected>代金引換</option>
+			</select><br /><br />
+			配送先<br />
+			<input type='radio' name='destination' value='registered' checked />ご自宅<br /><br />
+			<input type='radio' name='destination' value='another' />配送先を指定<br />
+			ご住所<br />
+			<input type='text' name='address' /><br /><br />
+			購入しますか？<br />
+			<input type='submit' value='購入する' />
+		</form>
+    {% else %}
+        商品が選択されていません。
+    {% endif %}
+		<br /><br />
+		<a href='main.html'>商品検索</a>へ<br />
+{% endblock %}

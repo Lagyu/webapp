@@ -5,45 +5,39 @@
 		<br />
     {% if warning %}<p class="warning">{{ warning }}</p>{% endif %}
         {% if view.request.user.cart.productcart_set.all|length > 0 %}
+            <form action="{% url 'shopping:cart_to_purchase_post_receiver' %}" method="post">
+            {% csrf_token %}
 		<table>
 			<tr>
+                <th>購入</th>
 				<th>商品名</th>
-				<th>商品の色</th>
+				<th>商品の種類</th>
 				<th>メーカー名</th>
 				<th>単価</th>
 				<th>数量</th>
 				<th></th>
 			</tr>
             {% for product_in_cart in view.request.user.cart.productcart_set.all %}
-                {% if product_in_cart.id == added_product_cart_id %}
-                    <tr style="background: aquamarine">
-                        <td>{{ product_in_cart.id }}: {{ product_in_cart.sub_product.parent_product.name }}</td>
+                    <tr{% if product_in_cart.id == added_product_cart_id %} style="background: aquamarine !important;"{% endif %}>
+                        <td><label>
+                            <input type="checkbox" id="purchase_check_{{ product_in_cart.id }}" name="purchase_check_{{ product_in_cart.id }}" value="true" checked>
+                        </label></td>
+                        <td>{{ product_in_cart.sub_product.parent_product.name }}</td>
                         <td>{{ product_in_cart.sub_product.name }}</td>
                         <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
                         <td>{{ product_in_cart.sub_product.price }}円</td>
                         <td>{{ product_in_cart.quantity }} 個</td>
                         <td><a href='{% url "shopping:remove_from_cart_confirm"  product_in_cart.id  %}'>削除</a></td>
                     </tr>
-                {% else %}
-                    <tr>
-                        <td>{{ product_in_cart.id }}: {{ product_in_cart.sub_product.parent_product.name }}</td>
-                        <td>{{ product_in_cart.sub_product.name }}</td>
-                        <td>{{ product_in_cart.sub_product.parent_product.manufacturer.name }}</td>
-                        <td>{{ product_in_cart.sub_product.price }}円</td>
-                        <td>{{ product_in_cart.quantity }} 個</td>
-                        <td><a href='{% url "shopping:remove_from_cart_confirm"  product_in_cart.id  %}'>削除</a></td>
-                    </tr>
-                {% endif %}
     {% endfor %}
 		</table>
     {% load cart_sum %}
 		合計 {{ view.request.user.cart|cart_sum }} 円<br />
+            <input type='submit' value='☑の商品を購入する' />
+            </form>
     {% else %}
             カートの商品はありません。
     {% endif %}
-		<form action='to_be_implemented/purchaseConfirm.html' method='POST'>
-			<input type='submit' value='購入する' />
-		</form>
 		<br />
 		<a href="{% url 'shopping:index' %}">商品検索</a>へ<br />
 {% endblock %}

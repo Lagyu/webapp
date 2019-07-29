@@ -38,7 +38,7 @@
     {% load cart_sum %}
 		合計 {{ view.request.user.cart|cart_sum }} 円<br />
     {% endif %}
-		<form action='to_be_implemented/purchaseConfirm.html' method='POST'>
+		<form action='purchaseConfirm.html' method='POST'>
 			<input type='submit' value='購入する' />
 		</form>
 		<br />

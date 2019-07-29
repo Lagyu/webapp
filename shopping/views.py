@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 # Create your views here.
 from django.views.generic import TemplateView
-from .models import Product, Category, SubProduct, Cart, ShoppingUser, ProductCart
+from .models import Product, Category, SubProduct, Cart, ShoppingUser, ProductCart, ProductOrder, Warehouse, Order
 from typing import List
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,12 +13,15 @@ from django.forms import ModelForm
 
 from django.core.exceptions import ObjectDoesNotExist
 
+import datetime
+
 import operator
 import functools
 from django.db.models import Q, QuerySet
 from django.views import generic
 
 from typing import Dict
+
 
 def index(request):
     context = {"user_id": request.user.id, "categories": Category.objects.all()}
@@ -93,7 +96,7 @@ class CartView(LoginRequiredMixin, generic.TemplateView):
     template_name = "shopping/templates/cart.html"
 
 
-@login_required()
+@login_required
 def add_to_cart(request, product_id, sub_product_id):
     if request.method == 'GET':
         return product_detail(request, product_id, sub_product_id)
@@ -138,6 +141,97 @@ class RemoveFromCartConfirm(LoginRequiredMixin, generic.DeleteView):
 
     model = ProductCart
     success_url = reverse_lazy("shopping:cart")
+
+
+class PurchaseConfirm(LoginRequiredMixin, generic.TemplateView):
+    template_name = "shopping/templates/purchaseConfirm.html"
+
+
+@login_required
+def cart_to_purchase_receiver(request):
+
+    context = {}
+
+    posted_dict = dict(request.POST)
+    print(posted_dict)
+    all_keys: List[str] = list(posted_dict.keys())
+
+    checkbox_prefix_str = "purchase_check_"
+
+    product_cart_ids_list = [int(key_str.replace(checkbox_prefix_str, "")) for key_str in all_keys
+                             if checkbox_prefix_str in key_str]
+
+    product_cart_query_set = ProductCart.objects.filter(id__in=product_cart_ids_list)
+
+    context["product_carts"] = product_cart_query_set
+
+    return render(request, "shopping/templates/purchaseConfirm.html", context)
+
+
+@login_required
+def commit_purchase_and_return_completed(request):
+    posted_dict = dict(request.POST)
+    print(posted_dict)
+    all_keys: List[str] = list(posted_dict.keys())
+
+    checkbox_prefix_str = "purchase_confirm_"
+
+    product_cart_ids_list = [int(key_str.replace(checkbox_prefix_str, "")) for key_str in all_keys
+                             if checkbox_prefix_str in key_str]
+
+    order = Order.objects.create(parent_user=request.user, order_date=datetime.datetime.now(), is_shown=True)
+
+    for product_cart_id in product_cart_ids_list:
+        product_cart_obj = ProductCart.objects.get(id=product_cart_id)
+
+        need_to_allocate_quantity = product_cart_obj.quantity
+
+        stocks = list(product_cart_obj.get_available_stocks().order_by("-allocatable_num"))
+
+        # もし在庫不足なら、戻す。
+        if need_to_allocate_quantity > product_cart_obj.sub_product.get_allocatable_stock_num():
+            return HttpResponseRedirect(reverse("shopping:purchase_failed", kwargs={"invalid_product_cart_id": product_cart_obj.id}))
+
+        counter = 0
+        while need_to_allocate_quantity > 0:
+            if len(stocks) > 0:
+                if stocks[counter].allocatable_num > need_to_allocate_quantity:
+                    alloc_quantity = need_to_allocate_quantity
+                    ProductOrder.objects.create(
+                        parent_product=product_cart_obj.sub_product,
+                        parent_order=order,
+                        quantity=alloc_quantity,
+                        warehouse=stocks[counter].warehouse
+                    )
+                    # 在庫を減らす
+                    stocks[counter].allocatable_num -= alloc_quantity
+                    stocks[counter].allocated_num += alloc_quantity
+                    stocks[counter].save()
+
+                    need_to_allocate_quantity -= alloc_quantity
+                    counter += 1
+                    break
+
+                else:
+                    alloc_quantity = stocks[counter].allocatable_num
+                    ProductOrder.objects.create(
+                        parent_product=product_cart_obj.sub_product,
+                        parent_order=order,
+                        quantity=alloc_quantity,
+                        warehouse=stocks[counter].warehouse
+                    )
+                    # 在庫を減らす
+                    stocks[counter].allocatable_num -= alloc_quantity
+                    stocks[counter].allocated_num += alloc_quantity
+                    stocks[counter].save()
+
+                    need_to_allocate_quantity -= alloc_quantity
+                    counter += 1
+
+    return HttpResponseRedirect(reverse("shopping:purchase_complete", kwargs={"order_id": order.id}))
+
+
+
 
 
 
